@@ -1,6 +1,6 @@
-🚀 **Available on RapidAPI:** https://rapidapi.com/s7ryo7/api/asia-business-day
-
 # East Asia Precision Calendar API
+
+🚀 **Available on RapidAPI:** https://rapidapi.com/s7ryo7/api/asia-business-day
 
 Accurate business day calculations for Japan and Taiwan.
 
