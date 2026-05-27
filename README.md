@@ -4,7 +4,7 @@
 
 Accurate business day calculations for Japan and Taiwan.
 
-./demo.gif
+![](./businessdayAPI.gif)
 
 ## Why this API exists
 
