@@ -1,18 +1,39 @@
-# East Asia Precision Calendar API
+🚀 **Available on RapidAPI:**  
+https://rapidapi.com/s7ryo7/api/asia-business-day
 
-🚀 **Available on RapidAPI:** https://rapidapi.com/s7ryo7/api/asia-business-day
-
-Accurate business day calculations for Japan and Taiwan.
+> Most calendar APIs fail in Taiwan.
 
 ![](./businessdayAPI.gif)
 
-## Why this API exists
+## Saturday... but still a workday.
+
+Most holiday APIs treat all weekends as non-working days.
+
+That breaks in Taiwan.
+
+Taiwan has unique **makeup workdays (補班日)** where Saturdays become official business days.  
+This API handles them correctly — along with Japanese substitute holidays and cross-border business day calculations.
+
+Built for:
+
+- Trading systems
+- TSMC supply chains
+- Logistics platforms
+- Cross-border e-commerce
+- Financial settlement systems
+
+
+# Why this API exists
 
 Most calendar APIs fail to handle:
 
 - Taiwan makeup workdays (補班日)
 - Japanese substitute holidays
-- Cross-border business day math
+- Business day math across East Asia
+- Cross-border logistics calendars
+- Trading settlement edge cases
+
+This API was built specifically for East Asian operational accuracy.
 
 ## Description
 The East Asia Precision Trading & Logistics Calendar API is the ultimate solution for calculating true business days in Japan (JP) and Taiwan (TW). Designed for algorithmic trading, cross-border logistics, and enterprise supply chain management, this API goes beyond simple weekend filtering. It flawlessly handles complex local calendar rules—including Japan's substitute holidays and Taiwan's unique "makeup workdays" (補班日)—ensuring 100% accurate business day logic for your applications.
