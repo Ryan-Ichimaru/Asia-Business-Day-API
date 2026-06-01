@@ -48,6 +48,16 @@ The East Asia Precision Trading & Logistics Calendar API is the ultimate solutio
 - **Ultra-Low Latency:** Hosted on a stateless, enterprise-grade edge network with zero database queries, delivering lightning-fast responses globally.
 - **Multilingual Context:** Returns holiday reasons and statuses in English, Japanese, and Traditional Chinese.
 
+- ## OpenAPI
+
+This API provides an OpenAPI 3.1 specification for developers, automation workflows, and AI agents.
+
+- OpenAPI schema endpoint: https://east-asia-calendar-api.s7ryo7.workers.dev/openapi.yaml
+- OpenAPI schema on GitHub: https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/blob/main/openapi.yaml
+- RapidAPI page: https://rapidapi.com/YOUR_USERNAME/api/asia-business-day
+
+The schema is designed for structured JSON integration and GPT/Claude/Cursor-style tool calling workflows.
+
 ## Ideal Use Cases
 - **TSMC & Semiconductor Supply Chain Trading:** Accurately align trading algorithms and financial models with the true operational calendars of TSMC, its Japanese facilities (e.g., Kumamoto), and related supply chain partners.
 - **Cross-Border E-Commerce (EC):** Dynamically calculate hyper-accurate shipping estimates, delivery ETAs, and customer support availability for platforms operating between Japan and Taiwan.
