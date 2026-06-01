@@ -51,11 +51,6 @@ The East Asia Precision Trading & Logistics Calendar API is the ultimate solutio
 - ## OpenAPI
 
 This API provides an OpenAPI 3.1 specification for developers, automation workflows, and AI agents.
-
-- OpenAPI schema endpoint: https://east-asia-calendar-api.s7ryo7.workers.dev/openapi.yaml
-- OpenAPI schema on GitHub: https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/blob/main/openapi.yaml
-- RapidAPI page: https://rapidapi.com/YOUR_USERNAME/api/asia-business-day
-
 The schema is designed for structured JSON integration and GPT/Claude/Cursor-style tool calling workflows.
 
 ## Ideal Use Cases
