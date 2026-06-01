@@ -1,0 +1,408 @@
+openapi: 3.1.0
+info:
+  title: East Asia Calendar API
+  version: 1.0.0
+  description: >
+    This API provides structured JSON responses for developers and AI agents regarding
+    public holidays, working days, and makeup workdays in Japan (JP) and Taiwan (TW).
+    It is designed for automation workflows, tool calling, and reliable integration 
+    with external applications, specifically for logistics, trading, and business day calculations.
+servers:
+  - url: https://east-asia-calendar-api.s7ryo7.workers.dev
+    description: Production server on Cloudflare Workers.
+  - url: https://asia-business-day.p.rapidapi.com
+    description: RapidAPI gateway server.
+components:
+  securitySchemes:
+    RapidAPIKey:
+      type: apiKey
+      in: header
+      name: X-RapidAPI-Key
+      description: RapidAPI key for authentication. RapidAPI authentication may be handled by the RapidAPI gateway.
+    RapidAPIHost:
+      type: apiKey
+      in: header
+      name: X-RapidAPI-Host
+      description: RapidAPI host header.
+  schemas:
+    DateInfo:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+          example: "2026-06-01"
+          description: The date in YYYY-MM-DD format.
+        country:
+          type: string
+          example: "JP"
+          description: The ISO country code (JP or TW).
+        is_working_day:
+          type: boolean
+          example: true
+          description: Whether the date is a regular working day.
+        is_weekend:
+          type: boolean
+          example: false
+          description: Whether the date falls on a weekend.
+        is_holiday:
+          type: boolean
+          example: false
+          description: Whether the date is a public holiday.
+        is_makeup_workday:
+          type: boolean
+          example: false
+          description: Whether the date is a makeup workday (specific to Taiwan).
+        reason:
+          type: string
+          example: "Working Day"
+          description: The reason or name of the holiday/status in English.
+        reason_local:
+          type: string
+          example: "営業日"
+          description: The reason or name of the holiday/status in the local language.
+      required:
+        - date
+        - country
+        - is_working_day
+        - is_weekend
+        - is_holiday
+        - is_makeup_workday
+        - reason
+        - reason_local
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Human-readable error message.
+          example: "Invalid date format. Use YYYY-MM-DD."
+      required:
+        - error
+security:
+  - RapidAPIKey: []
+    RapidAPIHost: []
+paths:
+  /:
+    get:
+      security: []
+      operationId: getApiRootMessage
+      summary: Get API Root
+      description: Returns a simple text message confirming the API is running. Useful for health checks.
+      responses:
+        "200":
+          description: Successful response
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "East Asia Precision Trading & Logistics Calendar API"
+  /api/v1/calendar/all/{date}:
+    get:
+      operationId: getAllCountriesCalendarByDate
+      summary: Get Calendar Info For Both JP and TW
+      description: Retrieves calendar information for both Japan and Taiwan for a specific date, including the next working day for each country. Requires MEGA subscription plan.
+      parameters:
+        - name: date
+          in: path
+          required: true
+          description: The date to check in YYYY-MM-DD format.
+          schema:
+            type: string
+            format: date
+            example: "2026-06-01"
+      responses:
+        "200":
+          description: Successful response containing calendar info for both countries
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: date
+                    example: "2026-06-01"
+                  JP:
+                    allOf:
+                      - $ref: "#/components/schemas/DateInfo"
+                      - type: object
+                        properties:
+                          next_working_day:
+                            type: string
+                            format: date
+                            example: "2026-06-02"
+                        required:
+                          - next_working_day
+                  TW:
+                    allOf:
+                      - $ref: "#/components/schemas/DateInfo"
+                      - type: object
+                        properties:
+                          next_working_day:
+                            type: string
+                            format: date
+                            example: "2026-06-02"
+                        required:
+                          - next_working_day
+                required:
+                  - date
+                  - JP
+                  - TW
+        "400":
+          description: Bad request (invalid date format)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized (if authentication is used and fails)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden (insufficient subscription plan)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Too many requests (Rate limited)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/calendar/{country}/{date}:
+    get:
+      operationId: getCountryCalendarByDate
+      summary: Get Calendar Info For A Specific Country
+      description: Retrieves calendar information for a specific country (JP or TW) and date. Also returns the next working day.
+      parameters:
+        - name: country
+          in: path
+          required: true
+          description: ISO country code (JP or TW).
+          schema:
+            type: string
+            enum: ["JP", "TW"]
+            example: "JP"
+        - name: date
+          in: path
+          required: true
+          description: The date to check in YYYY-MM-DD format.
+          schema:
+            type: string
+            format: date
+            example: "2026-06-01"
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/DateInfo"
+                  - type: object
+                    properties:
+                      next_working_day:
+                        type: string
+                        format: date
+                        description: The date of the next working day.
+                        example: "2026-06-02"
+                    required:
+                      - next_working_day
+        "400":
+          description: Bad request (invalid country or date format)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden (insufficient subscription plan)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Too many requests (Rate limited)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/calendar/{country}:
+    get:
+      operationId: getCountryCalendarByDateRange
+      summary: Get Calendar Info For Date Range
+      description: Retrieves an array of calendar information for a specific country over a date range.
+      parameters:
+        - name: country
+          in: path
+          required: true
+          description: ISO country code (JP or TW).
+          schema:
+            type: string
+            enum: ["JP", "TW"]
+            example: "TW"
+        - name: start_date
+          in: query
+          required: true
+          description: The start date of the range in YYYY-MM-DD format.
+          schema:
+            type: string
+            format: date
+            example: "2026-06-01"
+        - name: end_date
+          in: query
+          required: true
+          description: The end date of the range in YYYY-MM-DD format.
+          schema:
+            type: string
+            format: date
+            example: "2026-06-07"
+      responses:
+        "200":
+          description: Successful response containing an array of daily info
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DateInfo"
+        "400":
+          description: Bad request (missing parameters or invalid formats)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden (insufficient subscription plan)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Too many requests (Rate limited)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /api/v1/calculate/{country}:
+    get:
+      operationId: calculateWorkingDateByAddingDays
+      summary: Calculate Target Working Date
+      description: Calculates a future working date by adding a specified number of working days to a start date. Skips weekends and public holidays.
+      parameters:
+        - name: country
+          in: path
+          required: true
+          description: ISO country code (JP or TW).
+          schema:
+            type: string
+            enum: ["JP", "TW"]
+            example: "JP"
+        - name: start_date
+          in: query
+          required: true
+          description: The date to start counting from, in YYYY-MM-DD format.
+          schema:
+            type: string
+            format: date
+            example: "2026-06-01"
+        - name: add_days
+          in: query
+          required: true
+          description: The number of working days to add.
+          schema:
+            type: integer
+            example: 5
+      responses:
+        "200":
+          description: Successful calculation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  start_date:
+                    type: string
+                    format: date
+                    example: "2026-06-01"
+                    description: The original start date.
+                  add_days:
+                    type: integer
+                    example: 5
+                    description: The number of working days added.
+                  target_date:
+                    type: string
+                    format: date
+                    example: "2026-06-08"
+                    description: The calculated target date.
+                  target_info:
+                    $ref: "#/components/schemas/DateInfo"
+                required:
+                  - start_date
+                  - add_days
+                  - target_date
+                  - target_info
+        "400":
+          description: Bad request (missing parameters, invalid format, or negative days)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Forbidden (insufficient subscription plan)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "429":
+          description: Too many requests (Rate limited)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
