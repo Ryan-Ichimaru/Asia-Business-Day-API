@@ -48,7 +48,7 @@ The East Asia Precision Trading & Logistics Calendar API is the ultimate solutio
 - **Ultra-Low Latency:** Hosted on a stateless, enterprise-grade edge network with zero database queries, delivering lightning-fast responses globally.
 - **Multilingual Context:** Returns holiday reasons and statuses in English, Japanese, and Traditional Chinese.
 
-- ## OpenAPI
+## OpenAPI
 
 This API provides an OpenAPI 3.1 specification for developers, automation workflows, and AI agents.
 The schema is designed for structured JSON integration and GPT/Claude/Cursor-style tool calling workflows.
